@@ -15,9 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        if (!User::where('email', 'admin@lokalpedia.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Admin',
+                'email' => 'admin@lokalpedia.com',
+            ]);
+        }
+
+        $this->call([
+            CategoriesSeeder::class,
         ]);
     }
 }
