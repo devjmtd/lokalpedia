@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TagResource\Pages;
-use App\Models\Tag;
+use App\Filament\Resources\TopicResource\Pages;
+use App\Models\Topic;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,35 +18,37 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
-class TagResource extends Resource
+class TopicResource extends Resource
 {
-    protected static ?string $model = Tag::class;
+    protected static ?string $model = Topic::class;
 
-    protected static ?string $slug = 'tags';
+    protected static ?string $slug = 'topics';
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Tag Information')
+                Section::make('Topic Information')
                     ->schema([
                         TextInput::make('name')
                             ->required()
-                            ->reactive()
                             ->maxLength(255)
+                            ->reactive()
                             ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
                         TextInput::make('slug')
                             ->disabled()
                             ->required()
-                            ->unique(Tag::class, 'slug', fn($record) => $record),
+                            ->unique(Topic::class, 'slug', fn($record) => $record),
+                        Textarea::make('description')
+                            ->maxLength(500),
                         Placeholder::make('created_at')
                             ->label('Created Date')
-                            ->content(fn(?Tag $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                            ->content(fn(?Topic $record): string => $record?->created_at?->diffForHumans() ?? '-'),
                         Placeholder::make('updated_at')
                             ->label('Last Modified Date')
-                            ->content(fn(?Tag $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                            ->content(fn(?Topic $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
                 ])
             ]);
     }
@@ -57,10 +60,15 @@ class TagResource extends Resource
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('slug')
+                    ->searchable()
                     ->sortable(),
+
+                TextColumn::make('description'),
             ])
             ->filters([
+                //
             ])
             ->actions([
                 EditAction::make(),
@@ -76,9 +84,9 @@ class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTags::route('/'),
-            'create' => Pages\CreateTag::route('/create'),
-            'edit' => Pages\EditTag::route('/{record}/edit'),
+            'index' => Pages\ListTopics::route('/'),
+            'create' => Pages\CreateTopic::route('/create'),
+            'edit' => Pages\EditTopic::route('/{record}/edit'),
         ];
     }
 
