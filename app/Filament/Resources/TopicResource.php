@@ -23,7 +23,6 @@ class TopicResource extends Resource
     protected static ?string $model = Topic::class;
 
     protected static ?string $slug = 'topics';
-
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
     public static function form(Form $form): Form

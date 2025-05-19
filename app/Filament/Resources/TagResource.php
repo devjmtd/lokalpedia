@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Role;
 use App\Filament\Resources\TagResource\Pages;
 use App\Models\Tag;
 use Filament\Forms\Components\Placeholder;
@@ -15,6 +16,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class TagResource extends Resource
@@ -24,6 +26,39 @@ class TagResource extends Resource
     protected static ?string $slug = 'tags';
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value || $user->role === Role::Editor->value;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value || $user->role === Role::Editor->value;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value;
+    }
 
     public static function form(Form $form): Form
     {

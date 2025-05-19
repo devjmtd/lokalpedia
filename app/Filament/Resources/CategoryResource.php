@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Role;
 use App\Filament\Resources\CategoryResource\Pages;
 use App\Models\Category;
 use Filament\Forms\Components\Placeholder;
@@ -16,6 +17,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
@@ -25,6 +27,39 @@ class CategoryResource extends Resource
     protected static ?string $slug = 'categories';
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value || $user->role === Role::Editor->value;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value || $user->role === Role::Editor->value;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->role === Role::Admin->value;
+    }
 
     public static function form(Form $form): Form
     {
