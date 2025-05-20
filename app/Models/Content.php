@@ -24,6 +24,7 @@ class Content extends Model implements HasMedia
         'published_at',
         'author_id',
         'category_id',
+        'place_id',
     ];
 
     public function author(): BelongsTo
@@ -34,6 +35,11 @@ class Content extends Model implements HasMedia
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class);
     }
 
     public function registerMediaConversions(Media|null $media = null): void
