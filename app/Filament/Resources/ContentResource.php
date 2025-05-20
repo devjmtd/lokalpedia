@@ -17,6 +17,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -173,6 +174,43 @@ class ContentResource extends Resource
 
                                                 return Place::create($data)->getKey();
                                             }),
+                                    ]),
+                                Grid::make()
+                                    ->schema([
+                                        Select::make('tags')
+                                            ->createOptionModalHeading('Create New Tag')
+                                            ->createOptionForm([
+                                                TextInput::make('name')
+                                                    ->required()
+                                                    ->reactive()
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                                                TextInput::make('slug')
+                                                    ->required()
+                                                    ->unique(Category::class, 'slug', fn($record) => $record),
+                                            ])
+                                            ->multiple()
+                                            ->relationship('tags', 'name')
+                                            ->preload()
+                                            ->searchable(),
+                                        Select::make('topics')
+                                            ->createOptionModalHeading('Create New Topic')
+                                            ->createOptionForm([
+                                                TextInput::make('name')
+                                                    ->required()
+                                                    ->reactive()
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                                                TextInput::make('slug')
+                                                    ->required()
+                                                    ->unique(Category::class, 'slug', fn($record) => $record),
+                                                Textarea::make('description')
+                                                    ->maxLength(500),
+                                            ])
+                                            ->multiple()
+                                            ->relationship('topics', 'name')
+                                            ->preload()
+                                            ->searchable(),
                                     ]),
                                 Placeholder::make('created_at')
                                     ->label('Created Date')
