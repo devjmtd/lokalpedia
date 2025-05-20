@@ -91,6 +91,7 @@ class ContentResource extends Resource
                                 TextInput::make('title')
                                     ->required()
                                     ->reactive()
+                                    ->live(onBlur: true)
                                     ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->required()
@@ -107,10 +108,12 @@ class ContentResource extends Resource
                                     ->label('Published Date'),
                                 Select::make('author_id')
                                     ->label('Author')
-                                    ->options(fn() => User::where('role', Role::Admin->value)
-                                        ->orWhere('role', Role::Editor->value)
-                                        ->get()
-                                        ->pluck('name', 'id'))
+                                    ->relationship('author',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn(Builder $query) => $query
+                                        ->where('role', Role::Editor->value)
+                                        ->orWhere('role', Role::Admin->value)
+                                    )
                                     ->preload()
                                     ->searchable(),
                                 Grid::make()
