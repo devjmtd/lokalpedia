@@ -29,7 +29,7 @@ enum ContentType: string implements HasLabel, HasIcon
         return match ($this) {
             self::Article => 'heroicon-o-newspaper',
             self::Video => 'heroicon-o-video-camera',
-            self::Image => 'heroicon-o-image',
+            self::Image => 'heroicon-o-photo',
             self::Link => 'heroicon-o-link',
         };
     }
